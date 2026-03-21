@@ -50,3 +50,16 @@ python main.py
 增加记忆
 
 ![image-20260321172755492](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260321172755492.png)
+
+执行`shell`命令，
+
+<span style="color: red;">缺陷：只能一次性完成某个任务，很难做到分步执行。</span>
+
+<span style="color: green;">在当前目录下新建一个名为 note 的目录，然后进入这个新建的目录并创建一个名为 tmp.txt 文件，输入的内容是：HelloPyClaw，接着从note目录返回到上一级目录，新建一个 note.txt 文件，内容是：今天学了些啥呀？✅</span>
+
+<span style="color: red;">请分步为我完成下面的任务，1.在当前目录下新建一个名为 note 的目录，2.然后进入这个新建的目录并创建一个名为 tmp.txt 文件，输入的内容是：HelloPyClaw，3.接着从note目录返回到上一级目录，新建一个 note.txt 文件，内容是：今天学了些啥呀？❌</span>
+
+![image-20260321185037346](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260321185037346.png)
+
+
+
