@@ -48,3 +48,5 @@ python main.py
 ![image-20260321171437548](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260321171437548.png)
 
 增加记忆
+
+![image-20260321172755492](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260321172755492.png)
