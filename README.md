@@ -35,9 +35,16 @@ print(response.choices[0].message.content)
 
 在`.env`文件中写入你的
 
-在终端执行
-
 ```shell
 python main.py
 ```
 
+效果如下图所示：
+
+![image-20260321164710236](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260321164710236.png)
+
+用户的prompts硬编码在`.py`文件中是不恰当。实现持续对话。
+
+![image-20260321171437548](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260321171437548.png)
+
+增加记忆
