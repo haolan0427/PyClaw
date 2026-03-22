@@ -61,5 +61,8 @@ python main.py
 
 ![image-20260321185037346](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260321185037346.png)
 
+将系统最初的提示词封装进 `Agent.md` 文件中，做为系统提示词
 
+![image-20260323011901737](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260323011901737.png)
 
+<span style="color: red;">上图下载视频，经过了很多次的尝试。要使用到 `yt-dlp` 包（我是提前下载好的）。但模型可能会使用 `youtube-dl`、和 `you-get` 这两个包，就会达不到预期的效果。感觉和 AI 模型的能力有关。</span>
