@@ -1,14 +1,14 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
-
 load_dotenv()
 
 client = OpenAI(
     api_key=os.environ.get('DEEPSEEK_API_KEY'),
     base_url="https://api.deepseek.com")
-
-messages = [{"role": "system", "content": open("Agent.md", "r").read()}]
+agentmd = open("./Agent.md", "r").read()
+skillmd = open("./SKILL.md", "r").read()
+messages = [{"role": "system", "content": agentmd + skillmd}]
 
 while True:
     user_input = input("User：\n") # 用户输入
@@ -33,8 +33,8 @@ while True:
         command_result = os.popen(command).read() # 执行shell命令并获取结果
 
         content = f"AI已执行 {command}"
-        print(content)
-        messages.append({"role": "assistant", "content": content})
+        print(command_result)
+        messages.append({"role": "assistant", "content": command_result})
 
 
    

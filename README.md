@@ -66,3 +66,7 @@ python main.py
 ![image-20260323011901737](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260323011901737.png)
 
 <span style="color: red;">上图下载视频，经过了很多次的尝试。要使用到 `yt-dlp` 包（我是提前下载好的）。但模型可能会使用 `youtube-dl`、和 `you-get` 这两个包，就会达不到预期的效果。感觉和 AI 模型的能力有关。</span>
+
+增加SKILL，下载视频使用 `yt-dlp` 工具，浏览新闻使用 `curl` 工具
+
+![image-20260323070341546](https://raw.githubusercontent.com/haolan0427/tuchuang/master/image-20260323070341546.png)
