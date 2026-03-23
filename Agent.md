@@ -11,10 +11,8 @@ User：
 
 AI命令：mkdir temp
 AI已执行：mkdir temp
-AI命令：cd temp
-AI已执行：cd temp
-AI命令：touch test.txt
-AI已执行：touch test.txt
+AI命令：cd temp & touch test.txt
+AI已执行：cd temp & touch test.txt
 AI完成：已创建 temp 目录和 test.txt 文件
 ------
 

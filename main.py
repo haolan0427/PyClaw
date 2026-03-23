@@ -1,40 +1,32 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 from openai import OpenAI
+from agent_service import AgentService
+from web_ui import run_web_ui
+
 load_dotenv()
 
-client = OpenAI(
-    api_key=os.environ.get('DEEPSEEK_API_KEY'),
-    base_url="https://api.deepseek.com")
-agentmd = open("./Agent.md", "r").read()
-skillmd = open("./SKILL.md", "r").read()
-messages = [{"role": "system", "content": agentmd + skillmd}]
 
-while True:
-    user_input = input("User：\n") # 用户输入
-    messages.append({"role": "user", "content": user_input}) # 持续记忆
-    print("\n-------- Loop Start --------\n")
-    while True:
-        response = client.chat.completions.create(
-            model="deepseek-chat",
-            messages = messages,
-            stream = False
-        )
-        reply = response.choices[0].message.content # 模型回复
-        messages.append({"role": "assistant", "content": reply})
-
-        print(f"AI{reply}")
-
-        if reply.startswith("完成："): # 如果任务完成则结束任务，并输出结果
-            print("\n-------- Loop End --------\n")
-            break
-        
-        command = reply.strip().split("命令：")[1].strip() # 提取命令
-        command_result = os.popen(command).read() # 执行shell命令并获取结果
-
-        content = f"AI已执行 {command}"
-        print(command_result)
-        messages.append({"role": "assistant", "content": command_result})
+def main() -> None:
+    base_dir = Path(__file__).resolve().parent
+    client = OpenAI(
+        api_key=os.environ.get("DEEPSEEK_API_KEY"),
+        base_url="https://api.deepseek.com",
+    )
+    agent_service = AgentService(
+        client=client,
+        model="deepseek-chat",
+        prompt_paths=[
+            str(base_dir / "Agent.md"),
+            str(base_dir / "SKILL.md"),
+        ],
+    )
+    host = os.environ.get("PYCLAW_HOST", "0.0.0.0")
+    port = int(os.environ.get("PYCLAW_PORT", "4270"))
+    run_web_ui(agent_service=agent_service, host=host, port=port)
 
 
-   
+if __name__ == "__main__":
+    main()

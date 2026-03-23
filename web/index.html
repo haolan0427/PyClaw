@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyClaw Web Chat</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 32px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .hint {
+      margin-bottom: 16px;
+      color: #6b7280;
+    }
+
+    .chat-box {
+      min-height: 420px;
+      max-height: 65vh;
+      overflow-y: auto;
+      padding: 16px;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .message {
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message.user {
+      background: #dbeafe;
+    }
+
+    .message.assistant {
+      background: #eef2ff;
+    }
+
+    .message.command {
+      background: #ecfdf5;
+      font-family: Menlo, Monaco, Consolas, monospace;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+    }
+
+    form {
+      margin-top: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      box-sizing: border-box;
+      padding: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font: inherit;
+      resize: vertical;
+      background: #ffffff;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .status {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font: inherit;
+      color: #ffffff;
+      background: #2563eb;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PyClaw</h1>
+    <div class="hint">在这里输入任务，AI 会继续执行命令并把过程展示在页面中。</div>
+
+    <div id="chat-box" class="chat-box"></div>
+
+    <form id="chat-form">
+      <textarea id="message-input" placeholder="请输入你想让 AI 完成的任务..."></textarea>
+      <div class="toolbar">
+        <div id="status" class="status">准备就绪</div>
+        <button id="send-button" type="submit">发送</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const chatForm = document.getElementById("chat-form");
+    const messageInput = document.getElementById("message-input");
+    const sendButton = document.getElementById("send-button");
+    const statusText = document.getElementById("status");
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function renderMessage(message) {
+      const roleText = {
+        user: "User",
+        assistant: "AI",
+        command: "Command Result"
+      };
+
+      const prefix = message.role === "command" && message.command
+        ? `命令：${escapeHtml(message.command)}\n\n`
+        : "";
+
+      return `
+        <div class="message ${message.role}">
+          <span class="label">${roleText[message.role] || "Message"}</span>
+          ${prefix}${escapeHtml(message.content)}
+        </div>
+      `;
+    }
+
+    function renderHistory(history) {
+      chatBox.innerHTML = history.map(renderMessage).join("");
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function loadHistory() {
+      const response = await fetch("/history");
+      const data = await response.json();
+      renderHistory(data.history || []);
+    }
+
+    async function submitMessage(message) {
+      const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "请求失败");
+      }
+      return data.history || [];
+    }
+
+    chatForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const message = messageInput.value.trim();
+      if (!message) {
+        statusText.textContent = "请输入指令";
+        return;
+      }
+
+      sendButton.disabled = true;
+      statusText.textContent = "AI 正在处理中...";
+
+      try {
+        const history = await submitMessage(message);
+        messageInput.value = "";
+        renderHistory(history);
+        statusText.textContent = "处理完成";
+      } catch (error) {
+        statusText.textContent = error.message;
+      } finally {
+        sendButton.disabled = false;
+        messageInput.focus();
+      }
+    });
+
+    messageInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        chatForm.requestSubmit();
+      }
+    });
+
+    loadHistory();
+  </script>
+</body>
+</html>
